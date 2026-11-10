@@ -9,6 +9,7 @@ DEFAULTS = dict(
     # ---- model ----
     model="resnet18",           # "resnet18", "alexnet" (as in the AffectNet paper) or "small_cnn" (from scratch)
     pretrained=True,            # start from ImageNet weights (ignored for small_cnn)
+    face_recognition_checkpoint=False,
     img_size=128,               # FER2013 images are 48x48; pretrained networks work better on upscaled images
     # ---- training ----
     epochs=25,
@@ -71,7 +72,9 @@ def get_config(argv=None):
 
 def run_name(cfg):
     mode = f"_{cfg.ferplus_mode}" if cfg.labels == "ferplus" else ""
-    if not cfg.pretrained:
+    if cfg.face_recognition_checkpoint:
+        return f"{cfg.model}_{cfg.labels}{mode}_{cfg.img_size}px_{cfg.class_weighting}_face_recognition_checkpoint"
+    elif not cfg.pretrained:
         return f"{cfg.model}_{cfg.labels}{mode}_{cfg.img_size}px_{cfg.class_weighting}_no_pretrained"
     else:
         return f"{cfg.model}_{cfg.labels}{mode}_{cfg.img_size}px_{cfg.class_weighting}"

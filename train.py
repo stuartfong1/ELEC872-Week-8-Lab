@@ -44,7 +44,7 @@ def main(argv=None):
     plots.image_row(demo, "Augmented training images", run_dir / "plots" / "augmented.png")
 
     # ---- model, weighted loss, optimizer ----
-    model = build_model(cfg.model, num_classes, cfg.pretrained).to(device)
+    model = build_model(cfg.model, num_classes, cfg.pretrained, cfg.face_recognition_checkpoint).to(device)
     print(f"{cfg.model}: {sum(p.numel() for p in model.parameters()) / 1e6:.1f}M parameters")
     weight = class_weights(train_counts, cfg.class_weighting, device)
     print(pd.DataFrame({"images": train_counts.round().astype(int), "loss weight": weight.cpu().numpy().round(2)},

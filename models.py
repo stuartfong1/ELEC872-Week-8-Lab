@@ -6,15 +6,19 @@
 
 In each case the ImageNet classifier is replaced with a new layer that outputs one score per expression.
 """
+import torch
 import torch.nn as nn
 import torchvision
 
 
-def build_model(name, num_classes, pretrained=True):
+def build_model(name, num_classes, pretrained=True, face_recognition_checkpoint=False):
     tvm = torchvision.models
     if name == "resnet18":
         model = tvm.resnet18(weights=tvm.ResNet18_Weights.DEFAULT if pretrained else None)
         model.fc = nn.Sequential(nn.Dropout(0.3), nn.Linear(model.fc.in_features, num_classes))
+        if face_recognition_checkpoint:
+            model_state_dict = torch.load("epoch_16_acc_0.624.pt")["model"]
+            model.load_state_dict(model_state_dict, strict=False)
     elif name == "alexnet":
         model = tvm.alexnet(weights=tvm.AlexNet_Weights.DEFAULT if pretrained else None)
         model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
